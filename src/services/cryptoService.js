@@ -23,7 +23,7 @@ const getPublicKey = () => {
 };
 
 const decryptData = ({iv, key, text}) => {
-    // try {
+    try {
     const decodedKey = forge.util.decode64(key)
     const decodedIv = forge.util.decode64(iv)
     const decryptedKey = PRIVATE_KEY.decrypt(decodedKey, 'RSA-OAEP');
@@ -34,11 +34,11 @@ const decryptData = ({iv, key, text}) => {
     decipher.update(forge.util.createBuffer(forge.util.decode64(text)));
     decipher.finish();
 
-    const decryptedMessage = decipher.output.toString();
-    return decryptedMessage;
-    // } catch (error) {
-    //     throw new CryptoApiError('Failed to decrypt data');
-    // }
+    return decipher.output.toString();
+    } catch (error) {
+        console.error(error)
+        throw new CryptoApiError('Failed to decrypt data');
+    }
 };
 
 module.exports = {
