@@ -15,14 +15,15 @@ rsa.generateKeyPair({bits: 2048, workers: 2}, function (err, keypair) {
 
 const getPublicKey = () => {
     try {
-        return forge.pki.publicKeyToPem(PUBLIC_KEY);
+        const publicKey = forge.pki.publicKeyToPem(PUBLIC_KEY)
+        return publicKey;
     } catch (error) {
         throw new CryptoApiError('Failed to get public key');
     }
 };
 
 const decryptData = ({iv, key, text}) => {
-    try {
+    // try {
     const decodedKey = forge.util.decode64(key)
     const decodedIv = forge.util.decode64(iv)
     const decryptedKey = PRIVATE_KEY.decrypt(decodedKey, 'RSA-OAEP');
@@ -33,10 +34,11 @@ const decryptData = ({iv, key, text}) => {
     decipher.update(forge.util.createBuffer(forge.util.decode64(text)));
     decipher.finish();
 
-    return decipher.output.toString();
-    } catch (error) {
-        throw new CryptoApiError('Failed to decrypt data');
-    }
+    const decryptedMessage = decipher.output.toString();
+    return decryptedMessage;
+    // } catch (error) {
+    //     throw new CryptoApiError('Failed to decrypt data');
+    // }
 };
 
 module.exports = {
