@@ -15,25 +15,25 @@ rsa.generateKeyPair({bits: 2048, workers: 2}, function (err, keypair) {
 
 const getPublicKey = () => {
     try {
-        const publicKey = forge.pki.publicKeyToPem(PUBLIC_KEY)
-        return publicKey;
+        return forge.pki.publicKeyToPem(PUBLIC_KEY);
     } catch (error) {
         throw new CryptoApiError('Failed to get public key');
     }
 };
 
-const decryptData = ({iv, key: encryptedKey, text}) => {
+const decryptData = ({iv, key, text}) => {
     try {
-        const decryptedKey = PRIVATE_KEY.decrypt(forge.util.decode64(encryptedKey), 'RSA-OAEP');
-        const decryptedIv = PRIVATE_KEY.decrypt(forge.util.decode64(iv), 'RSA-OAEP');
+    const decodedKey = forge.util.decode64(key)
+    const decodedIv = forge.util.decode64(iv)
+    const decryptedKey = PRIVATE_KEY.decrypt(decodedKey, 'RSA-OAEP');
+    const decryptedIv = PRIVATE_KEY.decrypt(decodedIv, 'RSA-OAEP');
 
-        const decipher = forge.cipher.createDecipher('AES-CBC', decryptedKey);
-        decipher.start({iv: decryptedIv});
-        decipher.update(forge.util.createBuffer(forge.util.decode64(text)));
-        decipher.finish();
+    const decipher = forge.cipher.createDecipher('DES-CBC', decryptedKey);
+    decipher.start({iv: decryptedIv});
+    decipher.update(forge.util.createBuffer(forge.util.decode64(text)));
+    decipher.finish();
 
-        const decryptedMessage = decipher.output.toString();
-        return decryptedMessage;
+    return decipher.output.toString();
     } catch (error) {
         throw new CryptoApiError('Failed to decrypt data');
     }
