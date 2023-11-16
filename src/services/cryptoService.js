@@ -6,7 +6,7 @@ const pki = forge.pki;
 const PASSWORD = "UgbajaGabriel";
 
 const createCertificate = (password) => {
-    const keys = pki.rsa.generateKeyPair(2048);
+    const keys = pki.rsa.generateKeyPair(1024);
     const cert = pki.createCertificate();
 
     cert.publicKey = keys.publicKey;
